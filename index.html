@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>MD5 ANALYSIS TOOL</title>
+  <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro&family=Courier+New&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Courier New','Source Code Pro',monospace;
+      margin:0;padding:0;
+      background:#000;color:#fff;overflow:hidden;
+    }
+    .container {
+      max-width:800px;margin:50px auto;padding:30px;
+      background:rgba(0,0,0,0.5); /* Trong suốt */
+      border-radius:10px;
+      box-shadow:0 4px 10px rgba(0,0,0,0.1);
+      position:relative;
+      z-index:1;
+      border: 2px solid; /* Viền LED RGB */
+      animation: rainbow 5s linear infinite;
+    }
+    h1 {
+      text-align:center;text-transform:uppercase;
+      font-size:28px;color:#0ff;text-shadow:0 0 10px rgba(0,255,255,0.5);
+    }
+    .form-group {margin-bottom:20px;}
+    label {display:block;margin-bottom:8px;font-weight:bold;color:#fff;}
+    input, select, button {
+      width:100%;padding:12px;font-size:16px;
+      background:#1e1e1e;color:#fff;border:1px solid #444;
+      border-radius:6px;box-sizing:border-box;
+    }
+    button {
+      background:#07f;border:none;color:#fff;
+      cursor:pointer;margin-top:10px;
+      transition:.3s;
+    }
+    button:hover {background:#0056b3;}
+    .notification {
+      display:none;
+      background:rgba(0,0,0,0.5); /* Trong suốt */
+      color:#fff;
+      padding:10px;border-radius:6px;
+      text-align:center;margin-bottom:20px;
+      position:relative;
+      border: 2px solid; /* Viền LED RGB */
+      animation: rainbow 5s linear infinite;
+    }
+    .notification .checkmark {
+      position:absolute;left:15px;top:50%;
+      transform:translateY(-50%);font-size:20px;
+    }
+    .result {
+      display:none;margin-top:20px;
+      background:rgba(0,0,0,0.5); /* Trong suốt */
+      padding:15px;border-radius:6px;
+      text-align:center;
+      border: 2px solid; /* Viền LED RGB */
+      animation: rainbow 5s linear infinite;
+    }
+    .result span {font-size:20px;color:#f63;font-weight:bold;}
+    .contact-info {text-align:center;margin-top:20px;color:#ccc;}
+    .contact-info a {color:#07f;text-decoration:none;}
+    .contact-info a:hover {text-decoration:underline;}
+    .theme-switcher {text-align:center;margin-top:20px;}
+    .theme-switcher button {width:auto;margin:0 5px;}
+    body.dark-mode {background:#111;}
+    body.dark-mode .container {background:rgba(0,0,0,0.5);}
+    body.pink-mode {background:#ff66b2;}
+    body.pink-mode .container {background:rgba(255,105,180,0.5);}
+    body.pink-mode input,body.pink-mode select {
+      background:#ff3399;color:#000;
+    }
+    body.pink-mode .contact-info a {color:#33ccff;}
+    #login-form, #license-form, #analysis-form {
+      background:rgba(0,0,0,0.5); /* Trong suốt */
+      padding:20px;
+      border-radius:8px;
+      border: 2px solid; /* Viền LED RGB */
+      animation: rainbow 5s linear infinite;
+    }
+    #license-key {
+      border: 2px solid;
+      animation: rainbow 5s linear infinite;
+    }
+    @keyframes rainbow {
+      0% {border-color: red;}
+      14% {border-color: orange;}
+      28% {border-color: yellow;}
+      42% {border-color: green;}
+      57% {border-color: blue;}
+      71% {border-color: indigo;}
+      85% {border-color: violet;}
+      100% {border-color: red;}
+    }
+    #galaxyCanvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      background: radial-gradient(circle at center, #1a0033 0%, #000 70%);
+    }
+    #music-control {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    #music-control button {
+      width: auto;
+      padding: 10px 20px;
+      background: #07f;
+      border: 2px solid;
+      animation: rainbow 5s linear infinite;
+    }
+    #music-control button:hover {
+      background: #0056b3;
+    }
+  </style>
+</head>
+<body class="dark-mode">
+  <canvas id="galaxyCanvas"></canvas>
+  <audio id="bgmusic" autoplay loop>
+    <source src="https://cdn.tainhac123.com/listen/2017/02/noi-nay-co-anh-son-tung-m-tp.mp3" type="audio/mpeg">
+    Trình duyệt của bạn không hỗ trợ audio.
+  </audio>
+  <div class="container">
+    <div id="music-control">
+      <button id="music-btn">Tắt Nhạc</button>
+    </div>
+    <h1>MD5 ANALYSIS TOOL</h1>
+    <div id="notification" class="notification">
+      <span class="checkmark">✔</span><span id="notif-text">Thành công!</span>
+    </div>
+
+    <!-- Login Form -->
+    <div id="login-form">
+      <div class="form-group">
+        <label for="username">Tài Khoản</label>
+        <input type="text" id="username" placeholder="Nhập Tài Khoản">
+      </div>
+      <div class="form-group">
+        <label for="password">Mật Khẩu</label>
+        <input type="password" id="password" placeholder="Nhập Mật Khẩu">
+      </div>
+      <button id="login-btn">Đăng Nhập</button>
+    </div>
+
+    <!-- License Key Form -->
+    <div id="license-form" style="display:none;">
+      <div class="form-group">
+        <label for="license-key">License Key</label>
+        <input type="text" id="license-key" placeholder="Nhập License Key (VD: XXXXX-XXXXX-XXXXX-XXXXX)">
+      </div>
+      <button id="license-btn">Kích Hoạt</button>
+    </div>
+
+    <!-- Analysis -->
+    <div id="analysis-form" style="display:none;">
+      <div class="form-group">
+        <label for="game">Chọn Loại Phân Tích</label>
+        <select id="game">
+          <option value="tai-xiu">Tài Xỉu</option>
+          <option value="lo-de">Lô Đề</option>
+        </select>
+      </div>
+      <div id="region-selection" class="form-group" style="display:none;">
+        <label for="region">Chọn Miền</label>
+        <select id="region">
+          <option value="mien-bac">Miền Bắc</option>
+          <option value="mien-nam">Miền Nam</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="md5-code">Nhập Mã MD5</label>
+        <input type="text" id="md5-code" placeholder="Nhập MD5...">
+      </div>
+      <button id="analyze-btn">Phân Tích</button>
+      <div id="analyzing" style="display:none;margin-top:15px;">Đang phân tích...</div>
+      <div id="result" class="result">
+        <span id="result-text"></span>
+        <p id="result-comment"></p>
+      </div>
+    </div>
+
+    <div class="theme-switcher">
+      <button onclick="toggleDarkMode()">Dark Mode</button>
+      <button onclick="togglePinkMode()">Pink Mode</button>
+    </div>
+
+    <div class="contact-info">
+      Liên hệ: 
+      <a href="https://t.me/tuioscat">Telegram</a> |
+      <a href="https://zalo.me/0929626616">Zalo</a> |
+      <a href="https://facebook.com/hgacheat.agency">Facebook</a>
+    </div>
+  </div>
+
+  <script>
+    // Định nghĩa hằng số
+    const VALID_USERNAME = 'thienbao001';
+    const VALID_PASSWORD = 'trumtaixiu';
+    const CRYPTOLENS_TOKEN = 'WyIxMDY4NjY0MTAiLCJPbzV0MGV6L2tWZTBNRTlNM2dHNVI5L3JMMjJHR0dvbVBOa1E4TU8xIl0=';
+    const PRODUCT_ID = '29725';
+
+    // Đăng nhập
+    document.getElementById('login-btn').onclick = () => {
+      const username = document.getElementById('username').value.trim();
+      const password = document.getElementById('password').value.trim();
+
+      if (username === VALID_USERNAME && password === VALID_PASSWORD) {
+        showNotif('Đăng nhập thành công!');
+        setTimeout(() => {
+          document.getElementById('notification').style.display = 'none';
+          document.getElementById('login-form').style.display = 'none';
+          document.getElementById('license-form').style.display = 'block';
+        }, 1000);
+      } else {
+        alert('Tài khoản hoặc mật khẩu không hợp lệ!');
+      }
+    };
+
+    // Xác thực License Key qua Cryptolens
+    async function validateLicenseKey(key) {
+      try {
+        const response = await fetch(`https://api.cryptolens.io/api/key/Activate?token=${CRYPTOLENS_TOKEN}&ProductId=${PRODUCT_ID}&Key=${key}`);
+        const result = await response.json();
+
+        console.log('Cryptolens Response:', JSON.stringify(result, null, 2));
+
+        if (result && result.result === 0) {
+          return { valid: true, message: 'Kích hoạt thành công!' };
+        } else {
+          console.error('Cryptolens Error:', result.message || 'Key không hợp lệ');
+          return { valid: false, message: result.message || 'License Key không hợp lệ! Vui lòng kiểm tra Product ID, Token, hoặc Key.' };
+        }
+      } catch (error) {
+        console.error('Lỗi kết nối Cryptolens:', error);
+        return { valid: false, message: `Lỗi kết nối Cryptolens: ${error.message}. Vui lòng kiểm tra kết nối mạng.` };
+      }
+    }
+
+    // Kích hoạt License Key
+    document.getElementById('license-btn').onclick = async () => {
+      const licenseKey = document.getElementById('license-key').value.trim();
+
+      if (!licenseKey.match(/^[A-Z0-9]{5}-[A-Z0-9]{5}-[A-Z0-9]{5}-[A-Z0-9]{5}$/)) {
+        alert('License Key phải có định dạng XXXXX-XXXXX-XXXXX-XXXXX!');
+        return;
+      }
+
+      document.getElementById('license-btn').disabled = true;
+      const { valid, message } = await validateLicenseKey(licenseKey);
+      document.getElementById('license-btn').disabled = false;
+
+      if (valid) {
+        showNotif('Kích hoạt thành công!');
+        setTimeout(() => {
+          document.getElementById('notification').style.display = 'none';
+          document.getElementById('license-form').style.display = 'none';
+          document.getElementById('analysis-form').style.display = 'block';
+        }, 1000);
+      } else {
+        alert(message);
+      }
+    };
+
+    // Chọn loại phân tích
+    document.getElementById('game').onchange = () => {
+      const isLo = document.getElementById('game').value === 'lo-de';
+      document.getElementById('region-selection').style.display = isLo ? 'block' : 'none';
+    };
+
+    // Phân tích MD5
+    document.getElementById('analyze-btn').onclick = () => {
+      const md5 = document.getElementById('md5-code').value.trim();
+      if (md5.length < 24) return alert('MD5 không hợp lệ!');
+      document.getElementById('analyzing').style.display = 'block';
+      document.getElementById('result').style.display = 'none';
+
+      setTimeout(() => {
+        const parts = [md5.slice(0, 8), md5.slice(8, 16), md5.slice(16, 24)];
+        const nums = parts.map(p => parseInt(p, 16) % 6 + 1);
+        const total = nums.reduce((a, b) => a + b, 0);
+        const isTai = total >= 11;
+        const percent = (isTai
+          ? ((total - 11) / 10 * 100 + 75)
+          : ((11 - total) / 10 * 100 + 20)
+        ).toFixed(1);
+
+        let comment = '';
+        if (percent >= 85) comment = 'Xin mạnh tay! Tỉ lệ cực cao';
+        else if (percent >= 70) comment = 'Tỉ lệ cao, nên vào!';
+        else if (percent >= 50) comment = 'Cân nhắc kỹ!';
+        else if (percent >= 30) comment = 'Tỉ lệ yếu, nên né!';
+        else comment = 'Rất yếu, né gấp!';
+
+        let text = '';
+        if (document.getElementById('game').value === 'tai-xiu') {
+          text = `${isTai ? 'TÀI' : 'XỈU'} (${percent}%)`;
+        } else {
+          const region = document.getElementById('region').value;
+          text = `LÔ ĐỀ ${region === 'mien-bac' ? 'Miền Bắc' : 'Miền Nam'}`;
+          comment = '';
+        }
+
+        document.getElementById('analyzing').style.display = 'none';
+        document.getElementById('result-text').textContent = text;
+        document.getElementById('result-comment').textContent = comment;
+        document.getElementById('result').style.display = 'block';
+      }, 2000);
+    };
+
+    // Hiển thị thông báo
+    function showNotif(msg) {
+      document.getElementById('notif-text').textContent = msg;
+      document.getElementById('notification').style.display = 'block';
+    }
+
+    // Chuyển đổi theme
+    function toggleDarkMode() {
+      document.body.classList.add('dark-mode');
+      document.body.classList.remove('pink-mode');
+    }
+    function togglePinkMode() {
+      document.body.classList.add('pink-mode');
+      document.body.classList.remove('dark-mode');
+    }
+
+    // Hiệu ứng Galaxy LED RGB và chữ Thiên Bảo
+    const canvas = document.getElementById('galaxyCanvas');
+    const ctx = canvas.getContext('2d');
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    const particlesArray = [];
+    const numberOfParticles = 100;
+
+    class Particle {
+      constructor() {
+        this.x = Math.random() * canvas.width;
+        this.y = Math.random() * canvas.height;
+        this.size = Math.random() * 2 + 0.5;
+        this.speedX = Math.random() * 0.5 - 0.25;
+        this.speedY = Math.random() * 0.5 - 0.25;
+        this.hue = Math.random() * 360; // Màu RGB LED
+      }
+      update() {
+        this.x += this.speedX;
+        this.y += this.speedY;
+        this.hue += 1; // Thay đổi màu sắc liên tục
+        if (this.hue > 360) this.hue = 0;
+        if (this.x < 0 || this.x > canvas.width) this.speedX *= -1;
+        if (this.y < 0 || this.y > canvas.height) this.speedY *= -1;
+      }
+      draw() {
+        ctx.fillStyle = `hsl(${this.hue}, 70%, 50%)`; // Màu LED RGB
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+
+    const textsArray = [];
+    const numberOfTexts = 20;
+
+    class Text {
+      constructor() {
+        this.x = Math.random() * canvas.width;
+        this.y = Math.random() * canvas.height;
+        this.speedX = Math.random() * 1 - 0.5;
+        this.speedY = Math.random() * 1 - 0.5;
+        this.fontSize = Math.random() * 20 + 15;
+        this.hue = Math.random() * 360; // Màu chữ thay đổi
+      }
+      update() {
+        this.x += this.speedX;
+        this.y += this.speedY;
+        this.hue += 1; // Thay đổi màu sắc
+        if (this.hue > 360) this.hue = 0;
+        if (this.x < 0 || this.x > canvas.width) this.speedX *= -1;
+        if (this.y < 0 || this.y > canvas.height) this.speedY *= -1;
+      }
+      draw() {
+        ctx.font = `bold ${this.fontSize}px 'Courier New'`;
+        ctx.fillStyle = `hsl(${this.hue}, 70%, 70%)`; // Màu chữ LED
+        ctx.fillText('Thiên Bảo', this.x, this.y);
+      }
+    }
+
+    function initParticles() {
+      for (let i = 0; i < numberOfParticles; i++) {
+        particlesArray.push(new Particle());
+      }
+    }
+    function initTexts() {
+      for (let i = 0; i < numberOfTexts; i++) {
+        textsArray.push(new Text());
+      }
+    }
+    initParticles();
+    initTexts();
+
+    function connectParticles() {
+      for (let a = 0; a < particlesArray.length; a++) {
+        for (let b = a; b < particlesArray.length; b++) {
+          const dx = particlesArray[a].x - particlesArray[b].x;
+          const dy = particlesArray[a].y - particlesArray[b].y;
+          const distance = Math.sqrt(dx * dx + dy * dy);
+          if (distance < 100) {
+            ctx.strokeStyle = `hsl(${particlesArray[a].hue}, 70%, 50%)`; // Màu LED nối
+            ctx.lineWidth = 0.5;
+            ctx.beginPath();
+            ctx.moveTo(particlesArray[a].x, particlesArray[a].y);
+            ctx.lineTo(particlesArray[b].x, particlesArray[b].y);
+            ctx.stroke();
+          }
+        }
+      }
+    }
+
+    function animate() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      for (let i = 0; i < particlesArray.length; i++) {
+        particlesArray[i].update();
+        particlesArray[i].draw();
+      }
+      for (let i = 0; i < textsArray.length; i++) {
+        textsArray[i].update();
+        textsArray[i].draw();
+      }
+      connectParticles();
+      requestAnimationFrame(animate);
+    }
+    animate();
+
+    // Điều khiển nhạc
+    const bgMusic = document.getElementById('bgmusic');
+    const musicBtn = document.getElementById('music-btn');
+    let isMusicPlaying = true;
+
+    musicBtn.onclick = () => {
+      if (isMusicPlaying) {
+        bgMusic.pause();
+        musicBtn.textContent = 'Bật Nhạc';
+        isMusicPlaying = false;
+      } else {
+        bgMusic.play();
+        musicBtn.textContent = 'Tắt Nhạc';
+        isMusicPlaying = true;
+      }
+    };
+  </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'934d0ad6ed51b039',t:'MTc0NTQwNzk2Ny4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
+</body>
+</html>
