@@ -7,18 +7,18 @@
   <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro&family=Courier+New&display=swap" rel="stylesheet">
   <style>
     body {
-      font-family: 'Courier New','Source Code Pro',monospace;
+      font-family: 'Courier New','Source+Code+Pro',monospace;
       margin:0;padding:0;
       background:#000;color:#fff;overflow:hidden;
     }
     .container {
       max-width:800px;margin:50px auto;padding:30px;
-      background:rgba(0,0,0,0.5); /* Trong suốt */
+      background:rgba(0,0,0,0.5);
       border-radius:10px;
       box-shadow:0 4px 10px rgba(0,0,0,0.1);
       position:relative;
       z-index:1;
-      border: 2px solid; /* Viền LED RGB */
+      border: 4px solid;
       animation: rainbow 5s linear infinite;
     }
     h1 {
@@ -40,12 +40,12 @@
     button:hover {background:#0056b3;}
     .notification {
       display:none;
-      background:rgba(0,0,0,0.5); /* Trong suốt */
+      background:rgba(0,0,0,0.5);
       color:#fff;
       padding:10px;border-radius:6px;
       text-align:center;margin-bottom:20px;
       position:relative;
-      border: 2px solid; /* Viền LED RGB */
+      border: 2px solid;
       animation: rainbow 5s linear infinite;
     }
     .notification .checkmark {
@@ -54,10 +54,10 @@
     }
     .result {
       display:none;margin-top:20px;
-      background:rgba(0,0,0,0.5); /* Trong suốt */
+      background:rgba(0,0,0,0.5);
       padding:15px;border-radius:6px;
       text-align:center;
-      border: 2px solid; /* Viền LED RGB */
+      border: 2px solid;
       animation: rainbow 5s linear infinite;
     }
     .result span {font-size:20px;color:#f63;font-weight:bold;}
@@ -75,10 +75,10 @@
     }
     body.pink-mode .contact-info a {color:#33ccff;}
     #login-form, #license-form, #analysis-form {
-      background:rgba(0,0,0,0.5); /* Trong suốt */
+      background:rgba(0,0,0,0.5);
       padding:20px;
       border-radius:8px;
-      border: 2px solid; /* Viền LED RGB */
+      border: 2px solid;
       animation: rainbow 5s linear infinite;
     }
     #license-key {
@@ -104,32 +104,11 @@
       z-index: 0;
       background: radial-gradient(circle at center, #1a0033 0%, #000 70%);
     }
-    #music-control {
-      text-align: center;
-      margin-bottom: 20px;
-    }
-    #music-control button {
-      width: auto;
-      padding: 10px 20px;
-      background: #07f;
-      border: 2px solid;
-      animation: rainbow 5s linear infinite;
-    }
-    #music-control button:hover {
-      background: #0056b3;
-    }
   </style>
 </head>
 <body class="dark-mode">
   <canvas id="galaxyCanvas"></canvas>
-  <audio id="bgmusic" autoplay loop>
-    <source src="https://cdn.tainhac123.com/listen/2017/02/noi-nay-co-anh-son-tung-m-tp.mp3" type="audio/mpeg">
-    Trình duyệt của bạn không hỗ trợ audio.
-  </audio>
   <div class="container">
-    <div id="music-control">
-      <button id="music-btn">Tắt Nhạc</button>
-    </div>
     <h1>MD5 ANALYSIS TOOL</h1>
     <div id="notification" class="notification">
       <span class="checkmark">✔</span><span id="notif-text">Thành công!</span>
@@ -192,9 +171,9 @@
 
     <div class="contact-info">
       Liên hệ: 
-      <a href="https://t.me/tuioscat">Telegram</a> |
-      <a href="https://zalo.me/0929626616">Zalo</a> |
-      <a href="https://facebook.com/hgacheat.agency">Facebook</a>
+      <a href="https://t.me/BaoOnTop">Telegram</a> |
+      <a href="https://zalo.me/0329686960">Zalo</a> |
+      <a href="https://facebook.com/Thiên Bảo">Facebook</a>
     </div>
   </div>
 
@@ -350,18 +329,18 @@
         this.size = Math.random() * 2 + 0.5;
         this.speedX = Math.random() * 0.5 - 0.25;
         this.speedY = Math.random() * 0.5 - 0.25;
-        this.hue = Math.random() * 360; // Màu RGB LED
+        this.hue = Math.random() * 360;
       }
       update() {
         this.x += this.speedX;
         this.y += this.speedY;
-        this.hue += 1; // Thay đổi màu sắc liên tục
+        this.hue += 1;
         if (this.hue > 360) this.hue = 0;
         if (this.x < 0 || this.x > canvas.width) this.speedX *= -1;
         if (this.y < 0 || this.y > canvas.height) this.speedY *= -1;
       }
       draw() {
-        ctx.fillStyle = `hsl(${this.hue}, 70%, 50%)`; // Màu LED RGB
+        ctx.fillStyle = `hsl(${this.hue}, 70%, 50%)`;
         ctx.beginPath();
         ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
         ctx.fill();
@@ -378,20 +357,20 @@
         this.speedX = Math.random() * 1 - 0.5;
         this.speedY = Math.random() * 1 - 0.5;
         this.fontSize = Math.random() * 20 + 15;
-        this.hue = Math.random() * 360; // Màu chữ thay đổi
+        this.hue = Math.random() * 360;
       }
       update() {
         this.x += this.speedX;
         this.y += this.speedY;
-        this.hue += 1; // Thay đổi màu sắc
+        this.hue += 1;
         if (this.hue > 360) this.hue = 0;
         if (this.x < 0 || this.x > canvas.width) this.speedX *= -1;
         if (this.y < 0 || this.y > canvas.height) this.speedY *= -1;
       }
       draw() {
         ctx.font = `bold ${this.fontSize}px 'Courier New'`;
-        ctx.fillStyle = `hsl(${this.hue}, 70%, 70%)`; // Màu chữ LED
-        ctx.fillText('Thiên Bảo', this.x, this.y);
+        ctx.fillStyle = `hsl(${this.hue}, 70%, 70%)`;
+        ctx.fillText('phimsextbao', this.x, this.y);
       }
     }
 
@@ -415,7 +394,7 @@
           const dy = particlesArray[a].y - particlesArray[b].y;
           const distance = Math.sqrt(dx * dx + dy * dy);
           if (distance < 100) {
-            ctx.strokeStyle = `hsl(${particlesArray[a].hue}, 70%, 50%)`; // Màu LED nối
+            ctx.strokeStyle = `hsl(${particlesArray[a].hue}, 70%, 50%)`;
             ctx.lineWidth = 0.5;
             ctx.beginPath();
             ctx.moveTo(particlesArray[a].x, particlesArray[a].y);
@@ -440,23 +419,6 @@
       requestAnimationFrame(animate);
     }
     animate();
-
-    // Điều khiển nhạc
-    const bgMusic = document.getElementById('bgmusic');
-    const musicBtn = document.getElementById('music-btn');
-    let isMusicPlaying = true;
-
-    musicBtn.onclick = () => {
-      if (isMusicPlaying) {
-        bgMusic.pause();
-        musicBtn.textContent = 'Bật Nhạc';
-        isMusicPlaying = false;
-      } else {
-        bgMusic.play();
-        musicBtn.textContent = 'Tắt Nhạc';
-        isMusicPlaying = true;
-      }
-    };
   </script>
 <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'934d0ad6ed51b039',t:'MTc0NTQwNzk2Ny4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
 </body>
